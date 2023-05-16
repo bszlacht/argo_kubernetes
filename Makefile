@@ -9,7 +9,7 @@ clean:
 	rm matrix_main
 
 test:
-	go test ./... -count=1
+	go test ./... -v -count=1
 
 test_integration:
-	go test ./integration_tests --tags=integration -count=1
+	go test ./integration_tests -v --tags=integration -count=1
