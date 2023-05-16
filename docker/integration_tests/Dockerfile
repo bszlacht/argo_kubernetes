@@ -7,4 +7,4 @@ RUN go mod download
 
 COPY . ./
 
-CMD ["make", "test"]
+CMD ["make", "test_integration"]
