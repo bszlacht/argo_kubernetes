@@ -1,0 +1,101 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  name: cicd-workflow
+  namespace: argo
+  annotations:
+    workflows.argoproj.io/description: |
+      This workflow is implementing CICD for simple GO API. 
+spec:
+    entrypoint: main
+    volumeClaimTemplates:
+     - metadata:
+         name: work
+       spec:
+         accessModes: [ ReadWriteOnce ]
+         resources:
+           requests:
+             storage: 64Mi
+    templates:
+     - name: main
+       steps:
+       - - name: build
+           template: build-template
+       - - name: test
+           template: test-template
+       - - name: integration-test
+           template: integration-test-template
+       - - name: deploy
+           template: deploy-template
+     - name: build-template
+       container:
+         volumeMounts:
+           - mountPath: /go/src/github.com/go-api
+             name: work
+             subPath: src
+           - mountPath: /go/pkg/mod
+             name: work
+             subPath: GOMODCACHE
+           - mountPath: /root/.cache/go-build
+             name: work
+             subPath: GOCACHE
+         image: golang:1.18
+         workingDir: /go/src/github.com/go-api
+         command: [ sh, -euxc ]
+         args:
+           - |
+             git clone https://github.com/bszlacht/argo_kubernetes.git . && go mod download && make build
+     - name: test-template
+       container:
+         image: golang:1.18
+         volumeMounts:
+           - mountPath: /go/src/github.com/go-api
+             name: work
+             subPath: src
+           - mountPath: /go/pkg/mod
+             name: work
+             subPath: GOMODCACHE
+           - mountPath: /root/.cache/go-build
+             name: work
+             subPath: GOCACHE
+         workingDir: /go/src/github.com/go-api
+         command: [ sh, -xuce ]
+         args:
+           - |
+             make test
+     - name: integration-test-template
+       container:
+         image: golang:1.18
+         volumeMounts:
+           - mountPath: /go/src/github.com/go-api
+             name: work
+             subPath: src
+           - mountPath: /go/pkg/mod
+             name: work
+             subPath: GOMODCACHE
+           - mountPath: /root/.cache/go-build
+             name: work
+             subPath: GOCACHE
+         workingDir: /go/src/github.com/go-api
+         command: [ sh, -xuce ]
+         args:
+           - |
+             make test_integration
+     - name: deploy-template
+       container:
+         image: golang:1.18
+         volumeMounts:
+           - mountPath: /go/src/github.com/go-api
+             name: work
+             subPath: src
+           - mountPath: /go/pkg/mod
+             name: work
+             subPath: GOMODCACHE
+           - mountPath: /root/.cache/go-build
+             name: work
+             subPath: GOCACHE
+         workingDir: /go/src/github.com/go-api
+         command: [ sh, -xuce ]
+         args:
+           - |
+             make run
