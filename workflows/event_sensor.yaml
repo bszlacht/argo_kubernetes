@@ -20,25 +20,25 @@ spec:
              - refs/heads/main
  triggers:
    - template:
-       name: github-workflow-trigger
-       k8s:
-         operation: create
-         source:
-            resource:
-              apiVersion: argoproj.io/v1alpha1
-              kind: Workflow
-              metadata:
-                generateName: github-
-              spec:
-                arguments:
-                  parameters:
-                    - name: commit-hash
-                workflowTemplateRef:
-                  name: cicd-template
-          parameters:
-            - src:
-                dependencyName: github-dep
-                dataKey: body.after
-              dest: spec.arguments.parameters.0.value
+      name: github-workflow-trigger
+      k8s:
+        operation: create
+        source:
+          resource:
+            apiVersion: argoproj.io/v1alpha1
+            kind: Workflow
+            metadata:
+              generateName: github-
+            spec:
+              arguments:
+                parameters:
+                  - name: commit-hash
+              workflowTemplateRef:
+                name: cicd-template
+        parameters:
+          - src:
+              dependencyName: github-dep
+              dataKey: body.after
+            dest: spec.arguments.parameters.0.value
      retryStrategy:
        steps: 2
