@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+ name: github
+ namespace: argo
+spec:
+ service:
+   ports:
+     - name: deploy
+       port: 12000
+       targetPort: 12000
+ github:
+   deploy:
+     owner: "bszlacht"
+     repository: "argo_kubernetes"
+     webhook:
+       endpoint: "/deploy"
+       port: "12000"
+       method: "POST"
+     events:
+       - "push"
+     insecure: true
+     active: true
+     contentType: "json"
