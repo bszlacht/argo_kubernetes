@@ -16,6 +16,10 @@ spec:
          resources:
            requests:
              storage: 64Mi
+    arguments:
+      parameters:
+        - name: commit-hash
+          value: "main"
     templates:
      - name: main
        steps:
@@ -46,7 +50,7 @@ spec:
          command: [ sh, -euxc ]
          args:
            - |
-             git clone https://github.com/bszlacht/argo_kubernetes.git . && go mod download && make build
+             git clone https://github.com/bszlacht/argo_kubernetes.git . && git checkout {{workflow.parameters.commit-hash}} && go mod download && make build
      - name: test-template
        container:
          image: golang:1.18
