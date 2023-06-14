@@ -25,6 +25,8 @@ spec:
            template: test-template
        - - name: integration-test
            template: integration-test-template
+       - - name: docker-build
+           template: docker-build-template
        - - name: deploy
            template: deploy-template
      - name: build-template
@@ -81,6 +83,31 @@ spec:
          args:
            - |
              make test_integration
+     - name: docker-build-template
+       container:
+         image: moby/buildkit:v0.9.3-rootless
+         volumeMounts:
+           - mountPath: /go/src/github.com/go-api
+             name: work
+             subPath: src
+         workingDir: /go/src/github.com/go-api
+         env:
+           - name: BUILDKITD_FLAGS
+             value: --oci-worker-no-process-sandbox
+         command:
+           - buildctl-daemonless.sh
+         args:
+           - build
+           - --frontend
+           - dockerfile.v0
+           - --local
+           - context=.
+           - --local
+           - dockerfile=docker/matrix/
+           - --output
+           - type=image,name=registry-service:5000/app-image,push=true,registry.insecure=true
+         securityContext:
+           privileged: true
      - name: deploy-template
        container:
          image: golang:1.18

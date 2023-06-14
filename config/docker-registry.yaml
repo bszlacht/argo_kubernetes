@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: docker-registry
+  labels:
+    app.kubernetes.io/name: docker-registry
+spec:
+  containers:
+  - name: docker-registry
+    image: registry:2
+    ports:
+    - containerPort: 5000
+      protocol: TCP
+    volumeMounts:
+    - mountPath: /var/lib/registry
+      name: image-store
+  volumes:
+  - name: image-store
+    emptyDir: {}
