@@ -1,2 +1,2 @@
-FROM registy:2
+FROM registry:2
 CMD ["ls"]
