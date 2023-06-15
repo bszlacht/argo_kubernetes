@@ -26,7 +26,7 @@ func (h handler) HandleMatMul(w http.ResponseWriter, r *http.Request) {
 	C, err := h.matrixService.MatMul(req.A, req.B)
 	if err != nil {
 		jsonResponse(w, http.StatusInternalServerError, apimodel.Error{
-			Message: "Internal error",
+			Message: "Internal server error",
 		})
 		return
 	}
