@@ -18,7 +18,7 @@ func (h handler) HandleMatMul(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		jsonResponse(w, http.StatusBadRequest, apimodel.Error{
-			Message: "Failed to decode body",
+			Message: "Failed to decode request body",
 		})
 		return
 	}
